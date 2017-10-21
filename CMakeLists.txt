@@ -1,0 +1,6 @@
+PROJECT(algorithms)
+set(project_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
+message(STATUS "THis is SOURCE DIR" ${PROJECT_SOURCE_DIR})
+message(STATUS "this is include dir" ${project_INCLUDE_DIR})
+INCLUDE_DIRECTORIES(${project_INCLUDE_DIR})
+ADD_SUBDIRECTORY(src bin)
