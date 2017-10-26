@@ -5,4 +5,7 @@ int main()
  InsertSort sort(a,6);
  sort.process();
  sort.output();
+ MergeSort msort(a,6);
+ msort.process();
+ msort.output();
 }
