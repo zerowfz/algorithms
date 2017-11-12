@@ -1,1 +1,1 @@
-add_executable(test test.cpp sort.cpp)
+add_executable(main main.cpp sort.cpp)
