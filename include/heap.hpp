@@ -1,4 +1,18 @@
-class print_buf;
+#ifndef __HEAP_HPP//不可缺少，可用来避免重复包含该头文件 
+#define __HEAP_HPP
+class print_buf
+{
+    public:
+        int buf_x;
+        const int width;
+        const int height;
+        float* buf;
+        
+        print_buf()
+           :width(128),height(6),buf_x(0)
+		{ buf = new float[width*height];}      
+};
+
 class heap{
     public:
         float* array;
@@ -12,18 +26,7 @@ class heap{
         void build_max_heap();
         void printheap();
         void print_(int,int);
-        print_buf tem;
+        print_buf tem;//类print_buf需要在该类之前定义 
         
 };
-class print_buf
-{
-    public:
-        int buf_x;
-        const int width;
-        const int height;
-        float* buf;
-        
-        print_buf()
-           :width(128),height(6),buf_x(0){ buf = new float[width*height];}      
-};
-
+#endif

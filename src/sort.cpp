@@ -1,5 +1,5 @@
-<<<<<<< HEAD
-#include "sort.hpp"
+//<<<<<<< HEAD
+//#include "sort.hpp"
 /*
 int main()
 {
@@ -12,6 +12,7 @@ int main()
  cout<<ls<<endl;
 }
 */
+/*
 sortbase::sortbase(float*A,int N)
 {
  ls_ = A;
@@ -40,6 +41,7 @@ void InsertSort::insert(float *ls)
  }
 }
 =======
+*/
 #include "sort.hpp"
 const float MAX=99999.99;
 /*
@@ -122,4 +124,4 @@ void MergeSort::merge(float*A,int s,int m,int f)
   }
  }
 }
->>>>>>> wfz2/dev
+//>>>>>>> wfz2/dev

@@ -49,6 +49,7 @@ void heap::build_max_heap()
 è¿™æ ·æ¯æ¬¡éƒ½å¯ä»¥å¾—åˆ°*/
 void heap::printheap()
 {
+ int n; //È±ÉÙnµÄÉùÃ÷ 
  n = tem.width*tem.height;
  for(int i=0;i<n;i++)
      tem.buf[i]=INF_;
@@ -56,10 +57,12 @@ void heap::printheap()
  for(int i=0;i<n;i++)
  {
      if(tem.buf[i]==INF_)
-     cout<<" ";
-     else cout<<buf[i][j];
-     if((i+1)%tem.width==0)cout<<endl;
-  }
+     	cout<<" ";
+     else 
+	 	cout<< tem.buf[i];//cout<<buf[i][j];//Ã»ÓĞ¶¨Òåj 
+     if((i+1)%tem.width==0)
+	 	cout<<endl;
+  //}//¶àÁË¸Ã·ûºÅ 
  }
 }
 
@@ -72,6 +75,6 @@ void heap::print_(int base,int l)
  }
  print_(2*base,l+1);
  int id = (l-1)*tem.width+ tem.buf_x;
- buf[id] = array[base-1];
+ tem.buf[id] = array[base-1];
  print_(2*base+1,l+1);
 }
