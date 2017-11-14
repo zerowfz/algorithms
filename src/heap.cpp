@@ -1,15 +1,15 @@
 #include "heap.hpp"
 inline int POW_2(int n){ int x=1;while(n>0){x*=2;n--;}}
-heap::heap(float* A,int n)
+inline int heap::get_layer(int n)
 {
- array = A;
- length = n;
+ int layer=0;
  int x=1;
  while(n>=x)
  {
   x *=2;
   layer++;
  }
+ return layer;
 }
 
 heap::max_heap(int i)
@@ -43,12 +43,20 @@ heap::build_max_heap()
 
 heap::printheap()
 {
- int i=1;
+ int m=1;
  int **a;
- a = new int[layer][POW_2(layer-1)]
+ int width = POW_2((layer-1)*2-1);
+ int high = layer;
+ a = new int[high][width];
+ for(int i=0;i<high;i++)
+	 for (int j=0;j<width;j++)
+		 a[i][j]=-1;
  
- while(i<=length)
+ while(m<length)
  {
-  cout<<
+  if(m>=(width-1))
+  {
+   cout<<
+  }
  }
 }
