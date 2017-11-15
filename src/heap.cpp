@@ -49,7 +49,7 @@ void heap::build_max_heap()
 这样每次都可以得到*/
 void heap::printheap()
 {
- n = tem.width*tem.height;
+ int n = tem.width*tem.height;
  for(int i=0;i<n;i++)
      tem.buf[i]=INF_;
  print_(1,1);
@@ -57,9 +57,8 @@ void heap::printheap()
  {
      if(tem.buf[i]==INF_)
      cout<<" ";
-     else cout<<buf[i][j];
+     else cout<<tem.buf[i];
      if((i+1)%tem.width==0)cout<<endl;
-  }
  }
 }
 
@@ -73,6 +72,6 @@ void heap::print_(int base,int l)
  }
  print_(2*base,l+1);
  int id = (l-1)*tem.width+ tem.buf_x;
- buf[id] = array[base-1];
+ tem.buf[id] = array[base-1];
  print_(2*base+1,l+1);
 }

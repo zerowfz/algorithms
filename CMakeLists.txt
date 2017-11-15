@@ -1,11 +1,3 @@
-<<<<<<< HEAD
-PROJECT(algorithms)
-set(project_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
-message(STATUS "THis is SOURCE DIR" ${PROJECT_SOURCE_DIR})
-message(STATUS "this is include dir" ${project_INCLUDE_DIR})
-INCLUDE_DIRECTORIES(${project_INCLUDE_DIR})
-ADD_SUBDIRECTORY(src bin)
-=======
 PROJECT(algorithms)
 set(project_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
 message(STATUS "THis is SOURCE DIR" ${PROJECT_SOURCE_DIR})
@@ -14,4 +6,3 @@ set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -std=c++11)
 INCLUDE_DIRECTORIES(${project_INCLUDE_DIR})
 ADD_SUBDIRECTORY(src bin)
 message(STATUS "this is the complier"${CMAKE_CXX_FLAGS})
->>>>>>> wfz2/dev

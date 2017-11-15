@@ -1,3 +1,5 @@
+#ifndef HEAP_H
+#define HEAP_H
 class print_buf
 {
     public:
@@ -15,11 +17,11 @@ class heap{
         int length;
         int layer;
         heap(float *A,int n)
-		:array(A),length(n),layer(get_layer(n)){};
+		:array(A),length(n){layer = get_layer(n);};
         void build_max_heap();
         void printheap();
-	int push();
-	int extend();
+	//int push();
+	//int extend();
 
     private:
         inline int PARENT(int i){return i/2;}
@@ -33,4 +35,4 @@ class heap{
 };
 
 
-
+#endif
