@@ -1,4 +1,14 @@
-
+class print_buf
+{
+    public:
+        int buf_x;
+        const int width;
+        const int height;
+        float* buf;
+        
+        print_buf()
+           :width(128),height(6),buf_x(0){ buf = new float[width*height];}      
+};
 class heap{
     public:
         float* array;
@@ -17,5 +27,10 @@ class heap{
         inline int RIGHT(int i){return 2*i+1;}
 	void max_heap(int i);
 	inline int get_layer(int);
+	void print_(int,int);
+	print_buf tem;
 	
-}
+};
+
+
+

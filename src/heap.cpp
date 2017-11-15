@@ -1,4 +1,7 @@
 #include "heap.hpp"
+#include <iostream>
+using namespace std;
+const float INF_=-999.99;
 inline int POW_2(int n){ int x=1;while(n>0){x*=2;n--;}}
 inline int heap::get_layer(int n)
 {
@@ -12,11 +15,11 @@ inline int heap::get_layer(int n)
  return layer;
 }
 
-heap::max_heap(int i)
+void heap::max_heap(int i)
 {
  int left,right,largest;
  float tem;
- left = LEST(i);
+ left = LEFT(i);
  right = RIGHT(i);
  if((left <= length) && (array[left]>array[i]))
     largest = left;
@@ -33,30 +36,43 @@ heap::max_heap(int i)
  return;
 }
 
-heap::build_max_heap()
+void heap::build_max_heap()
 {
  for(int j=length/2;j>0;j--)
  {
   max_heap(j);
  }
 }
-
-heap::printheap()
+/*该函数的目的在于可视化一个堆的结构，
+首先定义一个二维数组记录每个节点的位置，即如果该位置
+有值则附该节点的值，否则都是INF，然后利用树的中序遍历，
+这样每次都可以得到*/
+void heap::printheap()
 {
- int m=1;
- int **a;
- int width = POW_2((layer-1)*2-1);
- int high = layer;
- a = new int[high][width];
- for(int i=0;i<high;i++)
-	 for (int j=0;j<width;j++)
-		 a[i][j]=-1;
- 
- while(m<length)
+ n = tem.width*tem.height;
+ for(int i=0;i<n;i++)
+     tem.buf[i]=INF_;
+ print_(1,1);
+ for(int i=0;i<n;i++)
  {
-  if(m>=(width-1))
-  {
-   cout<<
+     if(tem.buf[i]==INF_)
+     cout<<" ";
+     else cout<<buf[i][j];
+     if((i+1)%tem.width==0)cout<<endl;
   }
  }
+}
+
+void heap::print_(int base,int l)
+{
+
+ if (base>length)
+ {
+  tem.buf_x += POW_2(layer-l)-1;
+  return;
+ }
+ print_(2*base,l+1);
+ int id = (l-1)*tem.width+ tem.buf_x;
+ buf[id] = array[base-1];
+ print_(2*base+1,l+1);
 }
