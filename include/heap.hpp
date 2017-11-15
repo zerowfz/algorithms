@@ -17,6 +17,7 @@ class heap{
         float* array;
         int length;
         int layer;
+        /*
 		inline int get_layer(int n)
 		{
 			 int layer=0;
@@ -27,9 +28,10 @@ class heap{
 			  layer++;
 			 }
 			 return layer;
-		};
+		};*/
+		heap(float *A,int n);/*
         heap(float *A,int n)
-		:array(A),length(n){layer = get_layer(n);};//内联函数必须在使用之前先定义好 
+		:array(A),length(n){layer = get_layer(n);};*///内联函数必须在使用之前先定义好 
         void build_max_heap();
         void printheap();
 	//int push();
@@ -39,9 +41,10 @@ class heap{
         inline int PARENT(int i){return i/2;}
         inline int LEFT(int i){return 2*i;}
         inline int RIGHT(int i){return 2*i+1;}
-	void max_heap(int i);
-	void print_(int,int);
-	print_buf tem;
+        inline int get_layer(int n);
+		void max_heap(int i);
+		void print_(int,int);
+		print_buf tem;
 	
 };
 #endif
