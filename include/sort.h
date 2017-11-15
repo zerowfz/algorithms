@@ -1,3 +1,5 @@
+#ifndef __SORT_H
+#define __SORT_H
 #include <iostream>
 extern const float MAX;
 using namespace std;
@@ -34,3 +36,6 @@ class MergeSort:public sortbase
 	 void sort(float* A,int s,int f);
 	 void merge(float* A,int s,int m,int f);
 };
+
+#endif
+

@@ -3,6 +3,7 @@
 using namespace std;
 const float INF_=-999.99;
 inline int POW_2(int n){ int x=1;while(n>0){x*=2;n--;}}
+/* 
 inline int heap::get_layer(int n)
 {
  int layer=0;
@@ -14,7 +15,7 @@ inline int heap::get_layer(int n)
  }
  return layer;
 }
-
+*/ 
 void heap::max_heap(int i)
 {
  int left,right,largest;
