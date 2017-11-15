@@ -1,9 +1,10 @@
-#include "heap.hpp"
+#include "heap.h"
 #include <iostream>
 using namespace std;
 const float INF_=-999.99;
-inline int POW_2(int n){ int x=1;while(n>0){x*=2;n--;}}
-inline int heap::get_layer(int n)
+inline int POW_2(int n){ int x=1;while(n>0){x*=2;n--;}return x;}
+
+int heap::get_layer(int n)
 {
  int layer=0;
  int x=1;
@@ -21,16 +22,16 @@ void heap::max_heap(int i)
  float tem;
  left = LEFT(i);
  right = RIGHT(i);
- if((left <= length) && (array[left]>array[i]))
+ if((left <= length) && (array[left-1]>array[i-1]))
     largest = left;
  else largest = i;
- if((right<=length)&&(array[right]>array[largest]))
+ if((right<=length)&&(array[right-1]>array[largest-1]))
     largest = right;
  if (largest!=i)
  {
-  tem = array[i];
-  array[i] = array[largest];
-  array[largest] = tem;
+  tem = array[i-1];
+  array[i-1] = array[largest-1];
+  array[largest-1] = tem;
   max_heap(largest);
  }
  return;
@@ -60,6 +61,7 @@ void heap::printheap()
      else cout<<tem.buf[i];
      if((i+1)%tem.width==0)cout<<endl;
  }
+ 
 }
 
 void heap::print_(int base,int l)
@@ -70,8 +72,32 @@ void heap::print_(int base,int l)
   tem.buf_x += POW_2(layer-l)-1;
   return;
  }
- print_(2*base,l+1);
+ print_(LEFT(base),l+1);
+ tem.buf_x++;
  int id = (l-1)*tem.width+ tem.buf_x;
  tem.buf[id] = array[base-1];
- print_(2*base+1,l+1);
+ print_(RIGHT(base),l+1);
 }
+
+int heap::push()
+{
+ length--;
+ layer = get_layer(length);
+ //把
+ float out = array[0];
+ array[0]=array[length];
+ max_heap(1);
+ return out;
+}
+/*
+// 测试程序：
+int main()
+{
+ float a[]={1,2,3,7,5,4};
+ heap s(a,6);
+ s.build_max_heap();
+ for(int i=0;i<6;i++)
+	 cout<<s.array[i]<<endl;
+ s.printheap();
+}
+*/

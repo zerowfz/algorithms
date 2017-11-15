@@ -1,4 +1,7 @@
+#ifndef SORT_H
+#define SORT_H
 #include <iostream>
+#include "heap.h"
 extern const float MAX;
 using namespace std;
 class sortbase
@@ -34,3 +37,14 @@ class MergeSort:public sortbase
 	 void sort(float* A,int s,int f);
 	 void merge(float* A,int s,int m,int f);
 };
+
+class HeapSort:public sortbase
+{
+ public:
+	 explicit HeapSort(float* A,int N)
+		 :sortbase(A,N),heap_(ls_done,N){}
+         void process();       
+ private:
+	 heap heap_;
+};
+#endif

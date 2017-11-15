@@ -80,3 +80,19 @@ void MergeSort::merge(float*A,int s,int m,int f)
   }
  }
 }
+
+void HeapSort::process()
+{
+ heap_.build_max_heap();
+ //每次将最大值即a[0]与当前最后的一个值交换位置，执行最大堆操作
+ float tem=0;
+ for(int i=num_array-1;i>0;i--)
+ {
+  tem =ls_done[i];
+  ls_done[i]=ls_done[0];
+  ls_done[0]=tem;
+  heap_.length--;
+  heap_.layer=heap_.get_layer(heap_.layer);
+  heap_.max_heap(1);
+ }
+}
