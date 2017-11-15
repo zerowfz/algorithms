@@ -1,5 +1,5 @@
-#include "sort.hpp"
-const float MAX=99999.99;
+#include "sort.h"
+extern const float MAX=99999.99;
 /*
 int main()
 {
@@ -13,9 +13,9 @@ int main()
 }
 */
 sortbase::sortbase(float*A,int N)
+	:ls_(A),num_array(N),ls_done(0)
+	 //初始化列表，来给常量变量来进行初始化，而不是赋值。
 {
- ls_ = A;
- num_array =  N;
  ls_done = new float[num_array]; 
  for(int i=0;i<N;i++)
  {
@@ -24,20 +24,20 @@ sortbase::sortbase(float*A,int N)
  }
 }
 
-void InsertSort::insert(float *ls)
+void InsertSort::insert()
 {
  int j;
  float key;
  for(int i=1;i<num_array;i++)
  {
-  key = ls[i];
+  key = ls_done[i];
   j=i-1;
-  while(j>=0&&ls[j]>key)
+  while(j>=0&&ls_done[j]>key)
   {
-   ls[j+1]=ls[j];
+   ls_done[j+1]=ls_done[j];
    j=j-1;
   }
-  ls[j+1]=key;
+  ls_done[j+1]=key;
  }
 }
 
