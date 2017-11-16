@@ -11,13 +11,14 @@ class print_buf
         print_buf()
            :width(128),height(6),buf_x(0){ buf = new float[width*height];}      
 };
+
 class heap{
     public:
         float* array;
         int length;
         int layer;
         heap(float *A,int n)
-		:array(A),length(n){layer = get_layer(n);};
+		:array(A),length(n){layer = get_layer(n);};//内联函数必须在使用之前先定义好 
         void build_max_heap();
         void printheap();
 	void max_heap(int i);
@@ -33,6 +34,4 @@ class heap{
 	print_buf tem;
 	
 };
-
-
 #endif

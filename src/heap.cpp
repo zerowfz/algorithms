@@ -15,7 +15,6 @@ int heap::get_layer(int n)
  }
  return layer;
 }
-
 void heap::max_heap(int i)
 {
  int left,right,largest;

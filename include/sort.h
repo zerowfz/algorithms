@@ -1,5 +1,5 @@
-#ifndef SORT_H
-#define SORT_H
+#ifndef __SORT_H
+#define __SORT_H
 #include <iostream>
 #include "heap.h"
 extern const float MAX;
@@ -48,3 +48,4 @@ class HeapSort:public sortbase
 	 heap heap_;
 };
 #endif
+
