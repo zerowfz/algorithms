@@ -11,4 +11,8 @@ int main()
  HeapSort hsort(a,6);
  hsort.process();
  hsort.output();
+ QuickSort qsort(a,6);
+ //for (int i=0;i<6;i++)cout<<qsort.ls_done[i]<<endl;
+ qsort.process();
+ qsort.output();
 }

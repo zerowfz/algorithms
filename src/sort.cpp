@@ -96,3 +96,44 @@ void HeapSort::process()
   heap_.max_heap(1);
  }
 }
+
+void QuickSort::quicksort(float *A,int p,int r)
+{
+ if(p<r)
+ {
+  int q=patition(A,p,r);
+  cout<<q<<endl;
+  quicksort(A,p,q-1);
+  quicksort(A,q+1,r);
+ }
+ return;
+}
+
+int QuickSort::patition(float*A,int p,int r)
+{
+ //储存主元的值
+ float x = A[r];
+ //i:记录某个位置，这个位置之前的值都是小于主元的，之后的值都是大于主元的
+ int i = p;
+ float temp;
+ for(int j=p;j<r;j++)
+ {
+  if(A[j]<=x)
+  {
+   //这个时候要交换A[j]与A[i]的位置，因为i记录的是前面都是小于x的元素，
+   //实际上也可以这样理解，也就是把所有小于x的元素顺着写下来。
+   if(x==j) i++;
+   else
+   {
+    temp = A[j];
+    A[j] = A[i];
+    A[i] = temp;
+    i++;
+   }
+  }
+ }
+ //交换主元的位置
+ A[r]=A[i];
+ A[i]=x;
+ return i;
+}

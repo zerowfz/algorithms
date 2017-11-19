@@ -47,5 +47,15 @@ class HeapSort:public sortbase
  private:
 	 heap heap_;
 };
+
+class QuickSort:public sortbase
+{
+ public:
+	 explicit QuickSort(float* A,int N)
+		 :sortbase(A,N){}
+	 void process(){quicksort(ls_done,0,num_array-1);}
+	 void quicksort(float*,int,int);
+	 int patition(float*,int,int);
+};
 #endif
 
