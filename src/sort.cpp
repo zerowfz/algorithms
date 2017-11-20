@@ -102,7 +102,7 @@ void QuickSort::quicksort(float *A,int p,int r)
  if(p<r)
  {
   int q=patition(A,p,r);
-  cout<<q<<endl;
+  //cout<<q<<endl;
   quicksort(A,p,q-1);
   quicksort(A,q+1,r);
  }
@@ -136,4 +136,18 @@ int QuickSort::patition(float*A,int p,int r)
  A[r]=A[i];
  A[i]=x;
  return i;
+}
+
+void CountSort::count_sort()
+{
+ int C[k]={0};
+ //for(int i=0;i<k;i++)cout<<C[i]<<endl;
+ for(int i=0;i<num_array;i++)C[int(ls_[i])]++;
+ for(int i=1;i<k;i++)C[i]+=C[i-1];
+ //for(int i=0;i<k;i++)cout<<C[i]<<endl;
+ for(int i=0;i<num_array;i++)
+ {
+	 ls_done[C[int(ls_[i])]-1]=ls_[i];
+	 C[int(ls_[i])]--;
+ }
 }

@@ -15,4 +15,7 @@ int main()
  //for (int i=0;i<6;i++)cout<<qsort.ls_done[i]<<endl;
  qsort.process();
  qsort.output();
+ CountSort csort(a,6);
+ csort.process();
+ csort.output();
 }

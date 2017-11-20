@@ -54,8 +54,21 @@ class QuickSort:public sortbase
 	 explicit QuickSort(float* A,int N)
 		 :sortbase(A,N){}
 	 void process(){quicksort(ls_done,0,num_array-1);}
+ private:	 
 	 void quicksort(float*,int,int);
 	 int patition(float*,int,int);
 };
-#endif
 
+class CountSort:public sortbase
+{
+ public:
+	 explicit CountSort(float* A,int N)
+		 :sortbase(A,N),k(10){for(int i;i<N;i++)
+			 if(A[i]>k)
+		           cout<<"wrong"<<endl;}
+	 void process(){count_sort();}
+ private:
+	 const int k;
+	 void count_sort();
+};
+#endif
