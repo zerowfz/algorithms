@@ -145,8 +145,11 @@ void CountSort::count_sort()
  for(int i=0;i<num_array;i++)C[int(ls_[i])]++;
  for(int i=1;i<k;i++)C[i]+=C[i-1];
  //for(int i=0;i<k;i++)cout<<C[i]<<endl;
- for(int i=0;i<num_array;i++)
+ for(int i=num_array-1;i>=0;i--)
  {
+	 //之所以从后面往前面遍历，原因在于这样可以使得
+	 //原本输入数组中相同值的元素的顺序在输出数组中
+	 //的顺序是不变的，这样的算法也称作是稳定的
 	 ls_done[C[int(ls_[i])]-1]=ls_[i];
 	 C[int(ls_[i])]--;
  }
