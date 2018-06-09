@@ -83,5 +83,15 @@ class Graph_with_weight:public Graph<dtype>{
     private:
 	    void create_reverse_graph();
 };
+template <typename dtype>
+void create(dtype* &p,int key,int weight){
+    if(p==nullptr){
+        p = new dtype(key,weight);
+    }else {
+        dtype* tem = p;
+        p = new dtype(key,weight);
+	p->next = tem;
+    }
+}
 template class Graph_no_weight<edge_no_weight>;
 template class Graph_with_weight<edge_with_weight>;

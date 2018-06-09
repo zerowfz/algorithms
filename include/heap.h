@@ -1,5 +1,6 @@
 #ifndef HEAP_H
 #define HEAP_H
+//驴驴
 class print_buf
 {
     public:
@@ -18,7 +19,7 @@ class heap{
         int length;
         int layer;
         heap(float *A,int n)
-		:array(A),length(n){layer = get_layer(n);};//内联函数必须在使用之前先定义好 
+		:array(A),length(n){layer = get_layer(n);};//脛脷脕陋潞炉脢媒卤脴脨毛脭脷脢鹿脫脙脰庐脟掳脧脠露篓脪氓潞脙 
         void build_max_heap();
         void printheap();
 	void max_heap(int i);
@@ -32,6 +33,5 @@ class heap{
         inline int RIGHT(int i){return 2*i+1;}
 	void print_(int,int);
 	print_buf tem;
-	
 };
 #endif

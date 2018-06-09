@@ -117,7 +117,8 @@ int main()
     }
 
     Graph_with_weight<edge_with_weight> graph(adj);
-    vector<edge_with_weight*> p = graph.MST_krusal(); 
+    vector<edge_with_weight*> p = graph.MST_prim(); 
+    //vector<edge_with_weight*> p = graph.MST_krusal(); 
     print_(p);
 
 }

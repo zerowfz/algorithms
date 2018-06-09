@@ -1,10 +1,14 @@
 #include "graph.hpp"
+#include "disjoint_set.h"
+#include "heap2.h"
+#include <limits.h>
 #include <unordered_set>
 #include <vector>
 #include <queue>
 #include <utility>
 #include <queue>
 #include <iostream>
+
 
 using namespace std;
 /*
@@ -228,13 +232,14 @@ vector<dtype*> Graph_with_weight<dtype>::MST_krusal(){
     //继续找
     using my_pair = pair<int,dtype>;
     using my_vec = vector<my_pair>;
-    vector<unordered_set<int> > all_set;
+    vector<dis_set<int>*> all_set;
+ 
     int num_node = this->adj.size();
-  //  cout<<num_node<<endl;;
+    //  cout<<num_node<<endl;;
     for(int i=0;i<num_node;i++){
-        all_set.push_back(unordered_set<int>{i});
+        all_set.push_back(new dis_set<int>(&i,1));
     }
-    for(auto i:all_set)for(auto j:i)cout<<j<<" ";
+    for(auto i:all_set){print_set(*i);cout<<endl;}
     cout<<endl;
     //pair<int,dtype> edge;
     auto comp = [](my_pair a,my_pair b){return a.second.value>b.second.value;};
@@ -256,11 +261,8 @@ vector<dtype*> Graph_with_weight<dtype>::MST_krusal(){
         int node1 = q.top().first;
 	int node2 = q.top().second.key;
 	cout<<"node:  "<<node1<<" "<<node2<<" "<<q.top().second.value<<endl;
-	if(all_set[node1].find(node2) == all_set[node1].end()){
-	    all_set[node1].insert(all_set[node2].begin(),all_set[node2].end());
-//	    cout<<"1"<<endl;
-	    all_set[node2] = all_set[node1];
-//	    cout<<"2"<<endl;
+	if(all_set[node1]->find(node1) != all_set[node2]->find(node2)){
+	    SetUnion(all_set[node1],all_set[node2]);
             if(result[node1]==nullptr)result[node1] = new dtype(node2,q.top().second.value);
 	    else {
 		    dtype* p = result[node1];
@@ -274,13 +276,69 @@ vector<dtype*> Graph_with_weight<dtype>::MST_krusal(){
 		    result[node2]->next = p;
 	    }
 	    num_edge++;
-	    for(auto i:all_set[node1])cout<<i<<" ";
+	    print_set(*all_set[node1]);
 	    cout<<endl;
-	    for(auto i:all_set[node2])cout<<i<<" ";
+	    print_set(*all_set[node2]);
 	    cout<<endl;
 	}
 	q.pop();
     }
     cout<<endl;
+    return result;
+}
+
+template <typename dtype>
+vector<dtype*> Graph_with_weight<dtype>::MST_prim(){
+/*这个函数是通过prim算法来得到最小生成树的，具体的prim算法是这样的思路：
+ * 对于当前的最小生成树的子集A，我们需要加入安全边e，使得A+e依旧是最小生成树。
+ * 这里的安全边，对应的是，在A的结点集合，和其他结点集合中的找到，两个结点最小的边，
+ * 则这条边，加入A。
+ * 如何解决：我们要找到，所有的非A结点到A结点中的最小值，当取出这个最小值之后，对应
+ * 这个结点到A中了，这个时候，又需要计算此时所有的非A结点到A中的距离。实际上如果我们
+ * 储存了上一次非A各个结点的最小值，这一次就只需要判断，新加入到A中的结点，到非A结点
+ * 的距离是否小于之前的值，小则更新。而对于所有的非A结点的最小值，可以用最小优先队列
+ * 存储。每一次，将顶元素排出。
+ * */
+
+    struct elem{
+    int edge;
+    int node;
+    int pa;
+    elem(int a,int b,int c):edge(a),node(b),pa(c){}
+    };
+    auto com = [](elem a,elem b){return a.edge<b.edge; };
+    vector<elem> qe_elem;
+    qe_elem.push_back(elem(0,0,-1));
+    for(int i=1;i<this->adj.size();i++){
+            qe_elem.push_back(elem(INT_MAX,i,-1));
+    }
+    pri_queue<elem,decltype(com)> qe(qe_elem,com);
+    vector<dtype*> result(this->adj.size(),nullptr);
+     
+    while(!qe.empty()){
+	elem node = qe.top();
+	if(node.pa!=-1){
+            create(result[node.node],node.pa,node.edge);
+	    create(result[node.pa],node.node,node.edge);
+	}
+	qe.pop();
+	dtype* p = this->adj[node.node];
+	while(p!=nullptr){
+	    vector<elem>* rest = qe.get_data();
+	  //查找如何解决；  
+	    elem* tem = nullptr;
+	    for(int i=0;i<(*rest).size();i++){
+	        if((*rest)[i].node==p->key){
+		    tem = &((*rest)[i]);
+		}
+	    }
+	    if(tem!=nullptr&&tem->edge>p->value){
+		    tem->edge = p->value; 
+		    tem->pa = node.node;
+	    }
+	    p = p->next;
+	}
+	qe.build();
+    }
     return result;
 }
