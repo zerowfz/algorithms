@@ -6,23 +6,26 @@ template<typename dtype>
 dis_set<dtype>::dis_set(dtype* data,int n){
     set_ = new mySet<dtype>();
     set_->first = new list_data<dtype>(*data,set_);
+    hash_map_[*data] = set_->first;
     list_data<dtype>* p = set_->first;
     set_->num++;
     for(int i=1;i<n;i++){
         p->next = new list_data<dtype>(data[i],set_);
         p = p->next;
+	hash_map_[data[i]] = p;
         set_->num++;
     }
     set_->tail = p;
 }
 template<typename dtype>
-list_data<dtype>* dis_set<dtype>::find(dtype data){
-    list_data<dtype>* p = set_->first;
+mySet<dtype>* dis_set<dtype>::find(dtype data){
+    /*list_data<dtype>* p = set_->first;
     for(int i = 0;i<set_->num;i++){
         if(p->data==data)break;
         p = p->next;
     }
-    return p->head->first;
+    */
+    return hash_map_[data]->head;
 }
 
 void print_set(dis_set<int> s){

@@ -239,8 +239,8 @@ vector<dtype*> Graph_with_weight<dtype>::MST_krusal(){
     for(int i=0;i<num_node;i++){
         all_set.push_back(new dis_set<int>(&i,1));
     }
-    for(auto i:all_set){print_set(*i);cout<<endl;}
-    cout<<endl;
+    //for(auto i:all_set){print_set(*i);cout<<endl;}
+    //cout<<endl;
     //pair<int,dtype> edge;
     auto comp = [](my_pair a,my_pair b){return a.second.value>b.second.value;};
     priority_queue<my_pair,my_vec,decltype(comp)> q(comp);
@@ -260,7 +260,7 @@ vector<dtype*> Graph_with_weight<dtype>::MST_krusal(){
     while(!q.empty()&&num_edge<num_node){
         int node1 = q.top().first;
 	int node2 = q.top().second.key;
-	cout<<"node:  "<<node1<<" "<<node2<<" "<<q.top().second.value<<endl;
+	//cout<<"node:  "<<node1<<" "<<node2<<" "<<q.top().second.value<<endl;
 	if(all_set[node1]->find(node1) != all_set[node2]->find(node2)){
 	    SetUnion(all_set[node1],all_set[node2]);
             if(result[node1]==nullptr)result[node1] = new dtype(node2,q.top().second.value);
@@ -276,14 +276,14 @@ vector<dtype*> Graph_with_weight<dtype>::MST_krusal(){
 		    result[node2]->next = p;
 	    }
 	    num_edge++;
-	    print_set(*all_set[node1]);
-	    cout<<endl;
-	    print_set(*all_set[node2]);
-	    cout<<endl;
+	    //print_set(*all_set[node1]);
+	    //cout<<endl;
+	    //print_set(*all_set[node2]);
+	    //cout<<endl;
 	}
 	q.pop();
     }
-    cout<<endl;
+    //cout<<endl;
     return result;
 }
 
@@ -304,7 +304,8 @@ vector<dtype*> Graph_with_weight<dtype>::MST_prim(){
     int edge;
     int node;
     int pa;
-    elem(int a,int b,int c):edge(a),node(b),pa(c){}
+    int key;
+    elem(int a,int b,int c):edge(a),node(b),pa(c),key(b){}
     };
     auto com = [](elem a,elem b){return a.edge<b.edge; };
     vector<elem> qe_elem;
@@ -312,7 +313,7 @@ vector<dtype*> Graph_with_weight<dtype>::MST_prim(){
     for(int i=1;i<this->adj.size();i++){
             qe_elem.push_back(elem(INT_MAX,i,-1));
     }
-    pri_queue<elem,decltype(com)> qe(qe_elem,com);
+    pri_queue_unique<elem,decltype(com)> qe(qe_elem,com);
     vector<dtype*> result(this->adj.size(),nullptr);
      
     while(!qe.empty()){
@@ -323,19 +324,24 @@ vector<dtype*> Graph_with_weight<dtype>::MST_prim(){
 	}
 	qe.pop();
 	dtype* p = this->adj[node.node];
+	qe.update_hash();
 	while(p!=nullptr){
 	    vector<elem>* rest = qe.get_data();
+	    int id = qe.find(p->key);
+	    if(id>=0){
+	    elem* tem = &((*rest)[id]);
 	  //查找如何解决；  
-	    elem* tem = nullptr;
+	    /*elem* tem = nullptr;
 	    for(int i=0;i<(*rest).size();i++){
 	        if((*rest)[i].node==p->key){
 		    tem = &((*rest)[i]);
 		}
-	    }
-	    if(tem!=nullptr&&tem->edge>p->value){
+	    }*/
+            
+	    if(tem->edge>p->value){
 		    tem->edge = p->value; 
 		    tem->pa = node.node;
-	    }
+	    }}
 	    p = p->next;
 	}
 	qe.build();

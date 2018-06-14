@@ -12,6 +12,7 @@
 #ifndef DIS_JOINT_H
 #define DIS_JOINT_H
 #include <iostream>
+#include <unordered_map>
 using namespace std;
 template<typename dtype>
 struct list_data;
@@ -34,8 +35,9 @@ template<typename dtype>
 class dis_set{
     public:
 	    dis_set(dtype* data,int n);
-	    list_data<dtype>* find(dtype );
+	    mySet<dtype>* find(dtype );
 	    mySet<dtype>* set_;
+	    unordered_map<dtype,list_data<dtype>*> hash_map_;
 };
 
 //这里一开始的函数，写成了，输入为数据对象而不是指针，这样就会存在问题
@@ -52,9 +54,11 @@ void SetUnion(dis_set<dtype>* a,dis_set<dtype>* b){
     p = p->next;
     while(p!=nullptr){
         p->head = b->set_;
+	b->hash_map_[p->data] = p;
         p = p->next;
     }
     a->set_ = b->set_;
+    a->hash_map_ = b->hash_map_;
     }else{
     a->set_->num += b->set_->num;
     list_data<dtype>* p = a->set_->tail;
@@ -63,14 +67,13 @@ void SetUnion(dis_set<dtype>* a,dis_set<dtype>* b){
     p = p->next;
     while(p!=nullptr){
         p->head = a->set_;
+	a->hash_map_[p->data] = p;
         p = p->next;
     }
     b->set_ = a->set_;
+    b->hash_map_ = a->hash_map_;
     }
 }
 void print_set(dis_set<int>);
 template class dis_set<int>;
-
-
-
 #endif

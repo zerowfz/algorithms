@@ -8,6 +8,7 @@
 
 #include <vector>
 #include <iostream>
+#include <unordered_map>
 using namespace std;
 
 template<typename dtype>
@@ -33,12 +34,35 @@ class pri_queue{
     void print_data(){for(auto i:data_)cout<<i<<" ";};
     vector<dtype>* get_data(){return &data_;}
     bool empty(){return num_==0;}
+    int get_num(){return num_;}
   private:
     vector<dtype> data_;
     compare_type com_;
     int num_ ;
     void down(int i);
 };
+
+template<typename dtype,typename compare_type=less_<dtype>>
+class pri_queue_unique:public pri_queue<dtype,compare_type>{
+  public:
+    pri_queue_unique(vector<dtype> a):pri_queue<dtype,compare_type>(a){}
+    pri_queue_unique(vector<dtype> a,compare_type b):pri_queue<dtype,compare_type>(a,b){}
+    pri_queue_unique():pri_queue<dtype,compare_type>(){}
+    pri_queue_unique(compare_type b):pri_queue<dtype,compare_type>(b){}
+    int find(int key){return hash_map_.find(key)==hash_map_.end()?-1:hash_map_[key];}
+    void update_hash();
+  private:
+    unordered_map<int,int> hash_map_;
+};
+
+template<typename dtype,typename compare_type>
+void pri_queue_unique<dtype,compare_type>::update_hash(){
+    hash_map_.clear();
+    vector<dtype>* data = this->get_data();
+    for(int i=0;i<this->get_num();i++){
+        hash_map_[(*data)[i].key] = i;
+    }
+}
 
 template<typename dtype,typename compare_type>
 pri_queue<dtype,compare_type>::pri_queue(vector<dtype> data){
