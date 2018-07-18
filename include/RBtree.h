@@ -4,33 +4,41 @@
 #ifndef RB_TREE_H
 #define RB_TREE_H
 #include <string>
-#include <vecotr>
+#include <vector>
 
-template <typename key>
+using namespace std;
+const int BLACK = 1;
+const int RED = 0;
+
+template <typename dtype>
 struct node{
-  node* p_;
-  node* left_;
-  node* right_;
-  key k_;
+  node* p;
+  node* left;
+  node* right;
+  int color;
+  dtype k;
+  node(dtype key,int c):p(nullptr),left(nullptr),right(nullptr),k(key),color(c){}
 };
-template <typename key> 
+
+template <typename dtype> 
 class RBtree{
   public:
-    RBtree(){root_ = new node();nil_ = new node();}
-    RBtree(vector<key>);
-    void output_p();
-    void output_m();
-    void output_a();
-    void insert_node(key);
-    void delete_node(key);
+    RBtree():root_(NIL_){}
+    RBtree(vector<dtype>);
+    void insert_node(dtype);
+    void delete_node(node<dtype>*);
+    void print_pre(); 
+    void print_mid();
+    void print_aft();
+    node<dtype>* get_item(dtype);
   private:
-    node* root_;
-    node* nil_;
-    node* create(key x)
-    {
-    node* n = new node();
-    n->key = x;
-    return n;
-    }
+    node<dtype> *const NIL_ = new node<dtype>(0,BLACK);
+    void left_rotate(node<dtype>*);
+    void right_rotate(node<dtype>*);
+    void Updatetree(node<dtype>*);
+    void fix_up(node<dtype>*);
+    node<dtype>* find_min(node<dtype>*);
+    void up(node<dtype>*,node<dtype>*);
+    node<dtype>* root_;
 };
 #endif
