@@ -262,6 +262,15 @@ bool graph_directed<dtype>::sssp_bellman(int s,vector<dtype> &d,vector<int> &p){
         }
     }    
     //判断是否有负数环
+    for(int i=0;i<this->num_;i++){
+        node<dtype>* tem = this->list_graph_[i];
+        while(tem!=nullptr){
+            int v = tem->key;
+            if(d[i] + tem->weight <d[v])return false;
+            tem = tem->next;
+        }
+    }
+    return true;
 }
 /*
 dijkstra算法来解决单源最短路径问题，不过该方法要求权重不能有负数。
@@ -300,19 +309,174 @@ void graph_directed<dtype>::sssp_dijkstra(int sor,vector<dtype> &d,vector<int> &
     }
 }
 
+/*
+   直接输出，最短路径矩阵和前驱子图矩阵作为最后的结果
+   type:不同的算法：1:重复二分法，  2.floyd     3.johnson
+*/
 template<typename dtype>
-void graph_directed<dtype>::assp(){
+void graph_directed<dtype>::assp(int type){
+    //init path_mat;
+    vector<vector<dtype>> path_mat(this->num_,vector<dtype>(this->num_,NIL));
+    for(int i=0;i<this->num_;i++)path_mat[i][i] = 0;
+    //init prior_mat;
+    vector<vector<int>> prior_mat(this->num_,vector<dtype>(this->num_,NIL));
+    if(type==1)assp_2branch(path_mat,prior_mat);
+    else if(type==2)assp_floyd(path_mat,prior_mat);
+    else assp_joshan(path_mat,prior_mat);
+    for(int i=0;i<this->num_;i++){
+        cout<<endl;
+        for(int j=0;j<this->num_;j++){
+            cout<<path_mat[i][j]<<" ";    
+        }
+        cout<<"  ";
+        for(int j=0;j<this->num_;j++){
+            cout<<prior_mat[i][j]<<" ";
+        }
+    }
+}
+
+/*
+    算法思路：假设问题p[k]表示的是，每条路径至多包含k个结点的时候的所有点的最短路径的矩阵。
+    那么显然当p[num_]即对应的是我们的最终的解。构造最优解p(i,j)[k] = min(p(i,j)[k-1],p(i,k)[k-1]+weight(k,j))对于所有可能的k
+    由于实际上我们要求的仅仅是p[num_]，中间的其他的起始并不需要，所以我们可以直接用二分法。书上这里是类比了矩阵运算来解释这一点的
+*/
+template<typename dtype>
+void graph_directed<dtype>::assp_2branch(vector<vector<dtype>> &p,vector<vector<int>> &pai){
+    //初始化p和pai
+    p = this->mat_graph_;
+    
+    for(int i=0;i<this->num_;i++){
+        p[i][i] = 0;
+        for(int j=0;j<this->num_;j++)
+        {
+            if(p[i][j]!=NIL&&i!=j){
+               pai[i][j] = i;
+            }    
+        }
+    }
+    int i=1;
+    while(i<this->num_){
+        branch_merge(p,p,pai,pai);
+        i *=2;
+    }
+}
+/*
+  该函数是上面算法的辅助函数，其即是将p这个当前解，加上q步的解。
+  pai对应的是p对应的前驱子图。
+  paiq对应的是q对应的前驱子图。
+*/
+template<typename dtype>
+void graph_directed<dtype>::branch_merge(vector<vector<dtype>> &p,vector<vector<dtype>> q,\
+                                          vector<vector<int>> &pai,vector<vector<int>> paiq){
+    for(int i=0;i<this->num_;i++){
+        for(int j=0;j<this->num_;j++){
+            for(int k=0;k<this->num_;k++){
+                if(p[i][k]!=NIL&&p[i][j]-p[i][k]>q[k][j])//这里是为了防止INT_MAX加上某个数会溢出.
+                {
+                    p[i][j] = p[i][k]+q[k][j];
+                    pai[i][j] = paiq[k][j];
+                }
+            }    
+        }
+     
+    }    
+}
+
+/*
+floyd算法的复杂度为O(V^3),重复二分法的为O(V^3LOGV),最主要的原因在于重复二分法中的最优子结构计算的时候还需要一次遍历。
+这里floyd算法找到了另外一个最优子结构。假设p[k]表示的是i到j结点的中间结点由v1,v2...vk这k个结点的集合中的结点构成的最短路径。
+p(i,j)[k] = min(p(i,j)[k-1],p(i,vk)[k-1]+p(vk,j)[k-1]),这里对应p[this->num_]即为最后的结果
+*/
+template<typename dtype>
+void graph_directed<dtype>::assp_floyd(vector<vector<dtype>> &p,vector<vector<int>> &pai){
+    //初始化path
+    p = this->mat_graph_;
+    for(int i=0;i<this->num_;i++){
+        p[i][i] = 0;
+        for(int j=0;j<this->num_;j++)
+        {
+            if(p[i][j]!=NIL&&i!=j){
+               pai[i][j] = i;
+            }    
+        }
+    }
+    for(int k=0;k<this->num_;k++){
+        for(int i=0;i<this->num_;i++){
+            for(int j=0;j<this->num_;j++){
+                if(p[i][k]!=NIL&&p[k][j]!=NIL&&p[i][j]>p[i][k]+p[k][j])    
+                {
+                    p[i][j] = p[i][k] + p[k][j];
+                    pai[i][j] = pai[k][j];
+                }
+            }    
+        }
+    }
 
 }
 
+/*
+   joshan 算法：该算法是用在稀疏图上的，其算法复杂度为O(V^2lgV+VE),对于稀疏图来说E几乎就是常数级别的。
+   该算法的主要思想 就是将所有的权重重新赋值为非负权重，然后对于每一个结点用dijkstra来进行单源操作。
+   dijkstra的算法复杂度最低为O(VlgV+E).
+   该算法的重点在于如何将所有的权重改成非负权重，并且保证修改后的图和之前的图最短路径是一致的。
+   这里对(u,v)边，wei'(u,v) = wei(u,v) + h(u) - h(v),这样重构的权重就是满足和之前权重的最短路径是一样的。h对应任意函数。
+   而这个时候为了构造一个函数h是的重构的权重满足非负，这里引入了一个新的结点s，其到其他所有结点权重为0。这样s到其他结点的单源
+   最优路径作为这个里的h，由三角不等式满足：h(u)+wei(u,v)>h(v),所以这个时候wei'(u,v)即是非负的
+*/
+template<typename dtype>
+void graph_directed<dtype>::assp_joshan(vector<vector<dtype>>& p,vector<vector<int>>& pai){
+    //引入新结点，先暂时的在list_graph上加入新结点，暂时将该图变成新的图‘
+    this->list_graph_.push_back(new node<dtype>(0,0));
+    node<dtype>* tem2 = this->list_graph_[this->num_];
+    for(int i=1;i<this->num_;i++){
+        tem2->next = new node<dtype>(i,0);
+        tem2 = tem2->next;
+    }
+    //暂时将this->num_加1，因为这个时候还是要弄到内部的bellman算法。
+    this->num_++;
+    vector<dtype> d(this->num_,NIL);//此时的新结点的单源最优路径
+    d[this->num_-1] = 0;
+    vector<int> tem_pai(this->num_,NIL);
+    if(!sssp_bellman(this->num_-1,d,tem_pai))cout<<"有负数环"<<endl;
+    this->num_--;
+    this->list_graph_.pop_back();
+    d.pop_back();
+    //更新权重
+    for(int i=0;i<this->num_;i++){
+        node<dtype>* tem = this->list_graph_[i];
+        while(tem!=nullptr){
+            tem->weight += d[i]-d[tem->key];
+            tem = tem->next;
+        }
+    }
+
+    for(int i=0;i<this->num_;i++){
+        sssp_dijkstra(i,p[i],pai[i]);    
+    }
+    //恢复权重
+    for(int i=0;i<this->num_;i++){
+        node<dtype>* tem = this->list_graph_[i];
+        while(tem!=nullptr){
+            tem->weight -= d[i]-d[tem->key];
+            tem = tem->next;
+        }
+    }
+}
 int main(){
     //vector<int> num;
     //GraphBase<int> c(2,)
     graph<int> graph;
     //GraphBase<int> *c = graph.create(1,7,vector<vector<int>>{{0,1},{0,2},{0,3},{2,3},{1,3},{3,1},{3,0},{0,4},{4,5},{5,6}});
-    GraphBase<int> *c = graph.create(1,5,vector<vector<int>>{{0,1,3},{0,2,5},{1,2,2},{2,1,1},{1,4,6},{2,4,4},{4,3,2},\
+    //GraphBase<int> *c = graph.create(1,5,vector<vector<int>>{{0,1,3},{0,2,5},{1,2,2},{2,1,1},{1,4,6},{2,4,4},{4,3,2},\
                                                               {3,4,7},{3,0,3},{2,3,6}});
+    GraphBase<int> *c = graph.create(1,5,vector<vector<int>>{{0,1,3},{0,4,-4},{0,2,8},\
+                                                             {1,4,7},{1,3,1},\
+                                                             {2,1,4},\
+                                                             {3,0,2},{3,2,-5},\
+                                                             {4,3,6}});
+    c->DFS();
     //GraphBase<int>* c = graph.create(1,vector<vector<int>>{{0,1},{2,0}});
+    /*
     c->print_path(c->BFS(0),0,3);
     c->DFS();
     cout<<c->edge_type(0,3);
@@ -321,5 +485,9 @@ int main(){
     vector<int> componnet = c->connected_component();
     c->sssp(0,1);
     c->sssp(0,2);
+    */
+    c->assp(1);
+    c->assp(2);
+    c->assp(3);
 }
 

@@ -57,15 +57,16 @@ class graph_directed:public GraphBase<dtype>{
       virtual vector<int> topo_sort();//对应拓扑排序的顺序
 
       virtual void sssp(int s,int type);//单源最短路径,path对应最短路径的值，prior_graph对应最短路径的前驱子图
-      virtual void assp(vector<vector<dtype>>& path_mat,vector<vector<int>> prior_mat){}//所有结点对的最短路径
+      virtual void assp(int type);//所有结点对的最短路径
       void max_flow(int s,int t){}
       
     private:
       bool sssp_bellman(int s,vector<dtype>& path,vector<int>& prior_graph);//bellman for sssp
       void sssp_dijkstra(int s,vector<dtype>& path,vector<int>& prior_graph);
-      void assp_2branch(vector<vector<dtype>>& path_mat,vector<vector<int>> prior_mat){}
-      void assp_floyd(vector<vector<dtype>>& path_mat,vector<vector<int>> prior_mat){}
-      void assp_joshan(vector<vector<dtype>>& path_mat,vector<vector<int>> prior_mat){}
+      void assp_2branch(vector<vector<dtype>>& path_mat,vector<vector<int>>& prior_mat);
+      void branch_merge(vector<vector<dtype>>&,vector<vector<dtype>>,vector<vector<int>>&,vector<vector<int>>);
+      void assp_floyd(vector<vector<dtype>>& path_mat,vector<vector<int>>& prior_mat);
+      void assp_joshan(vector<vector<dtype>>& path_mat,vector<vector<int>>& prior_mat);
       int flow_edmonds(int s,int t){}
 };
 
