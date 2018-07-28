@@ -65,22 +65,21 @@ template <typename dtype>
 vector<int> GraphBase<dtype>::BFS(int s){
     vector<int> flag(num_,0);//判断结点是否已经遍历过
     vector<int> pai(num_,NIL);//返回的前驱子图；
-    queue<node<dtype>*> q;//
-    q.push(list_graph_[s]);
-    pai[q.front()->key] = s;
-    flag[q.front()->key] = 1;
+    queue<int> q;//
+    q.push(s);
+    flag[s]=1;
     while(!q.empty()){
-        node<dtype>* tem = q.front();
+        int c = q.front();
         q.pop();
-        while(tem->next!=nullptr){
+        node<dtype>* tem = list_graph_[c];
+        while(tem!=nullptr){
             int p = tem->key;
-            tem = tem->next;
-            if(flag[tem->key])continue;
-            else{
-                pai[tem->key] = p;
-                q.push(tem);
-                flag[tem->key] = 1;
+            if(!flag[p]){
+                pai[p] = c;
+                q.push(p);
+                flag[p] = 1;
             }
+            tem = tem->next;
         }
     }
     return pai;
@@ -462,6 +461,91 @@ void graph_directed<dtype>::assp_joshan(vector<vector<dtype>>& p,vector<vector<i
         }
     }
 }
+
+template<typename dtype>
+void graph_directed<dtype>::max_flow(int source,int target)
+{
+    flow_edmonds(source,target);
+}
+/*
+    最大流问题的解法：构造残存网络，在残存网络中找到一条增广路径，然后流增加，再重复上面的过程
+    edmonds算法的改进在于，在找增广路径的时候，是在找源结点到汇结点的最短路径（这个最短路径是相对于权重为1来说的）
+    ---这里会遇到一个设计上的问题，比如说，现在我们要获取一个权重都为1的图，这个时候，现在我们的算法也是在图这个类里面
+    这个时候可以建立这个对象???这个时候貌似可以定义一个graph base类来处理。所以说，我们可以在基类中放一些，我们后面要用到
+    的函数比如DFS或者其他的。
+*/
+template <typename dtype>
+void graph_directed<dtype>::flow_edmonds(int source,int target){
+    //这里残存网络用mat来表示
+    vector<vector<dtype>> graph_resdual = this->mat_graph_;
+    //这里用map来存储边以及该边上的流
+    auto pairhash = [](const pair<int,int> &a){
+        size_t b = a.first;
+        size_t c = a.second;
+        return b^(c<<32);};
+    auto com = [](const pair<int,int> &a,const pair<int,int> &b){return a.first==b.first&&a.second==b.second;};
+    unordered_map<pair<int,int>,dtype,decltype(pairhash),decltype(com)> edge_flow(10,pairhash,com); 
+    for(int i=0;i<this->num_;i++){
+        node<dtype>* tem = this->list_graph_[i];
+        while(tem!=nullptr)
+        {
+            edge_flow[make_pair(i,tem->key)] = dtype(0);
+            tem = tem->next;    
+        }
+    }
+    vector<int> pai;
+    while(exist_path(graph_resdual,source,target,pai)){
+        //根据此时的前驱 pai，来找到最短的路径 (source->target)
+        int v = target;
+        dtype min = NIL;
+        while(pai[v]!=NIL){
+            int u = pai[v];
+            if(graph_resdual[u][v]<min){
+                min = graph_resdual[u][v];
+            }
+            //test
+            if(graph_resdual[u][v]==NIL)cout<<"错误";
+            v = u;
+        }
+        //update flow and graph_resdual
+        v = target;
+        while(pai[v]!=NIL){
+            int u = pai[v];
+            if(edge_flow.find(make_pair(u,v))!=edge_flow.end()){
+                edge_flow[make_pair(u,v)] += min;
+                graph_resdual[u][v] -= min;
+                graph_resdual[u][v] = graph_resdual[u][v]==0?NIL:graph_resdual[u][v];
+                graph_resdual[v][u] = graph_resdual[v][u]==NIL?min:graph_resdual[v][u] + min;
+            }else {
+                edge_flow[make_pair(v,u)] += min;
+                graph_resdual[v][u] -= min;
+                graph_resdual[v][u] = graph_resdual[v][u]==0?NIL:graph_resdual[v][u];
+                graph_resdual[u][v] = graph_resdual[u][v]==NIL?min:graph_resdual[u][v] + min;
+            }
+            v = u;
+        }
+    }
+    //显示最大流
+    int result=0;
+    for(auto iter:edge_flow){
+        cout<<iter.first.first<<"->"<<iter.first.second<<" "<<iter.second<<endl;    
+        if(iter.first.first==0)result += iter.second;
+        if(iter.first.second==0)result -= iter.second;
+    }
+    cout<<"max flow:"<<result<<endl;
+}
+
+template<typename dtype>
+bool graph_directed<dtype>::exist_path(vector<vector<dtype>> g,int s,int t,vector<int> &pai){
+    GraphBase<dtype> c(g);
+    pai = c.BFS(s);
+    while(t!=s){
+        if(pai[t]==NIL)return false;
+        else t = pai[t];
+    }
+    return true;
+}
+
 int main(){
     //vector<int> num;
     //GraphBase<int> c(2,)
@@ -469,12 +553,17 @@ int main(){
     //GraphBase<int> *c = graph.create(1,7,vector<vector<int>>{{0,1},{0,2},{0,3},{2,3},{1,3},{3,1},{3,0},{0,4},{4,5},{5,6}});
     //GraphBase<int> *c = graph.create(1,5,vector<vector<int>>{{0,1,3},{0,2,5},{1,2,2},{2,1,1},{1,4,6},{2,4,4},{4,3,2},\
                                                               {3,4,7},{3,0,3},{2,3,6}});
-    GraphBase<int> *c = graph.create(1,5,vector<vector<int>>{{0,1,3},{0,4,-4},{0,2,8},\
+    //GraphBase<int> *c = graph.create(1,5,vector<vector<int>>{{0,1,3},{0,4,-4},{0,2,8},\
                                                              {1,4,7},{1,3,1},\
                                                              {2,1,4},\
                                                              {3,0,2},{3,2,-5},\
                                                              {4,3,6}});
-    c->DFS();
+    GraphBase<int> *c = graph.create(1,6,vector<vector<int>>{{0,1,16},{0,2,13},
+                                                             {1,3,12},
+                                                             {2,4,14},{2,1,4},
+                                                             {3,2,9},{3,5,20},
+                                                             {4,3,7},{4,5,4}});
+    //c->DFS();
     //GraphBase<int>* c = graph.create(1,vector<vector<int>>{{0,1},{2,0}});
     /*
     c->print_path(c->BFS(0),0,3);
@@ -486,8 +575,9 @@ int main(){
     c->sssp(0,1);
     c->sssp(0,2);
     */
-    c->assp(1);
-    c->assp(2);
-    c->assp(3);
+    //c->assp(1);
+    //c->assp(2);
+    //c->assp(3);
+    c->max_flow(0,5);
 }
 

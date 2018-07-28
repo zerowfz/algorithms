@@ -42,8 +42,7 @@ class GraphBase{
       vector<int> end_t_;
       vector<int> dfs_pai_;
       void dfs_iter(int,int&,vector<int>&,vector<int>&,vector<int>&,vector<int>&,vector<node<dtype>*>);
-
-      };
+};
 
 template <typename dtype>
 class graph_directed:public GraphBase<dtype>{
@@ -58,7 +57,7 @@ class graph_directed:public GraphBase<dtype>{
 
       virtual void sssp(int s,int type);//单源最短路径,path对应最短路径的值，prior_graph对应最短路径的前驱子图
       virtual void assp(int type);//所有结点对的最短路径
-      void max_flow(int s,int t){}
+      void max_flow(int s,int t);
       
     private:
       bool sssp_bellman(int s,vector<dtype>& path,vector<int>& prior_graph);//bellman for sssp
@@ -67,7 +66,8 @@ class graph_directed:public GraphBase<dtype>{
       void branch_merge(vector<vector<dtype>>&,vector<vector<dtype>>,vector<vector<int>>&,vector<vector<int>>);
       void assp_floyd(vector<vector<dtype>>& path_mat,vector<vector<int>>& prior_mat);
       void assp_joshan(vector<vector<dtype>>& path_mat,vector<vector<int>>& prior_mat);
-      int flow_edmonds(int s,int t){}
+      void flow_edmonds(int s,int t);
+      bool exist_path(vector<vector<dtype>>,int,int,vector<int>&);
 };
 
 template <typename dtype>
